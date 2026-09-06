@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% set page_title = "Technician Performance" %}
+{% set page_sub = "Utilisation of each technician's working day, by day, month and year" %}
+
+{% block content %}
+<div class="card perf-filter-card">
+  <div class="perf-filter-row">
+    <label class="field" style="margin:0;">Technician
+      <span class="select-wrap">
+        <select id="perfTechnician"><option value="">Select technician</option></select>
+        <span class="select-caret">&#9662;</span>
+      </span>
+    </label>
+    <label class="field" style="margin:0;">Year
+      <span class="select-wrap">
+        <select id="perfYear"></select>
+        <span class="select-caret">&#9662;</span>
+      </span>
+    </label>
+    <label class="field" style="margin:0;">Month
+      <span class="select-wrap">
+        <select id="perfMonth"><option value="">Whole year</option></select>
+        <span class="select-caret">&#9662;</span>
+      </span>
+    </label>
+
+    <div class="perf-hours" id="perfHoursBox" style="display:none;">
+      <div class="perf-hours-label">Default hours / day</div>
+      <div class="perf-hours-controls">
+        <input class="text-input" type="number" id="perfHours" min="1" max="24" step="0.5">
+        {% if current_user and current_user.role == 'admin' %}
+        <button class="btn primary" id="perfHoursSave">Save</button>
+        {% else %}
+        <span class="perf-hours-note">Admin can change</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="form-success" id="perfHoursSuccess" style="margin-top:12px;">Working hours updated — efficiency recalculated.</div>
+  <div class="form-error" id="perfHoursError" style="margin-top:12px;"></div>
+</div>
+
+<div class="empty-state" id="perfEmpty">
+  <div class="perf-empty-mark">&#128200;</div>
+  <p>Choose a technician to see their performance.</p>
+  <p class="empty-sub">Efficiency is the share of the working day spent attending breakdowns &mdash; minutes worked &divide; (working hours &times; 60).</p>
+</div>
+
+<div id="perfContent" style="display:none;">
+  <!-- Scorecard: the headline gauge + key figures -->
+  <div class="perf-scorecard">
+    <div class="perf-gauge-panel">
+      <div class="perf-ident">
+        <div class="perf-avatar" id="perfAvatar">--</div>
+        <div>
+          <div class="perf-ident-name" id="perfName">&mdash;</div>
+          <div class="perf-ident-sub" id="perfIdentSub">&mdash;</div>
+        </div>
+      </div>
+      <div class="perf-gauge" id="perfGauge"></div>
+      <div class="perf-gauge-caption">Efficiency &middot; <span id="perfScopeLabel">&mdash;</span></div>
+    </div>
+
+    <div class="perf-tiles" id="perfTiles"></div>
+  </div>
+
+  <!-- Trend -->
+  <div class="card perf-trend-card">
+    <div class="perf-card-head">
+      <h3 id="perfTrendTitle">Efficiency trend</h3>
+      <span class="perf-legend"><span class="perf-legend-dot"></span> Efficiency %</span>
+    </div>
+    <div class="perf-trend-canvas"><canvas id="perfTrendChart"></canvas></div>
+  </div>
+
+  <!-- Detail table -->
+  <div class="table-panel">
+    <div class="table-toolbar">
+      <strong id="perfTableTitle" class="perf-table-title"></strong>
+      <span class="log-count" id="perfScopeInfo"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead id="perfTableHead"></thead>
+        <tbody id="perfTableBody"></tbody>
+        <tfoot id="perfTableFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>window.PERF_CAN_EDIT_HOURS = {{ 'true' if (current_user and current_user.role == 'admin') else 'false' }};</script>
+<script>document.addEventListener('DOMContentLoaded', initPerformancePage);</script>
+{% endblock %}

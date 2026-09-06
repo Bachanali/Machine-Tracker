@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% set page_title = "Add Data" %}
+{% set page_sub = "Record a new breakdown entry" %}
+
+{% block content %}
+<div class="add-data-layout">
+<form class="entry-panel" id="entryForm">
+  <div class="form-error" id="formError"></div>
+  <div class="form-success" id="formSuccess">Entry saved. You can now add the next one.</div>
+
+  <div class="entry-section">
+    <h4 class="entry-section-title"><span class="ci">&#128203;</span> Breakdown Details</h4>
+    <div class="grid4">
+      <label class="field"><span class="field-label">Unit <span class="req-star">*</span></span>
+        <span class="select-wrap">
+          <select name="unit" id="f_unit" required><option value="">Select unit</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field"><span class="field-label">Date <span class="req-star">*</span></span>
+        <input class="text-input" type="date" name="date" id="f_date" required>
+      </label>
+      <label class="field"><span class="field-label">Shift <span class="req-star">*</span></span>
+        <span class="select-wrap">
+          <select name="shift" id="f_shift" required><option value="">Select shift</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field"><span class="field-label">Machine <span class="req-star">*</span></span>
+        <span class="select-wrap">
+          <select name="machine" id="f_machine" required><option value="">Select unit first</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+
+      <label class="field">Complaint Reference
+        <span class="select-wrap">
+          <select name="complaintReference" id="f_complaintReference"><option value="">Select (optional)</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field">Notification Type
+        <span class="select-wrap">
+          <select name="notificationType" id="f_notificationType"><option value="">Select (optional)</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field">Ticket No.
+        <input class="text-input" type="text" name="ticketNo" id="f_ticketNo" placeholder="Optional">
+      </label>
+      <label class="field">Order No.
+        <input class="text-input" type="text" name="orderNo" id="f_orderNo" placeholder="Optional">
+      </label>
+      <label class="field">Machine No.
+        <input class="text-input" type="text" name="machineNo" id="f_machineNo" placeholder="e.g. 8">
+      </label>
+
+      <label class="field">Device Detail
+        <span class="select-wrap">
+          <select name="deviceDetail" id="f_deviceDetail"><option value="">Select (optional)</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field">Device Sub-Category
+        <span class="select-wrap">
+          <select name="deviceSubCat" id="f_deviceSubCat"><option value="">Select (optional)</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field"><span class="field-label">Fault Category <span class="req-star">*</span></span>
+        <span class="select-wrap">
+          <select name="faultCategory" id="f_faultCategory" required><option value="">Select fault</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field"><span class="field-label">Technician <span class="req-star">*</span></span>
+        <div id="f_technician"></div>
+      </label>
+    </div>
+  </div>
+
+  <div class="entry-section">
+    <h4 class="entry-section-title"><span class="ci">&#9201;</span> Timing</h4>
+    <div class="grid3">
+      <label class="field"><span class="field-label">Time Start <span class="req-star">*</span></span>
+        <input class="text-input" type="time" name="timeStart" id="f_timeStart" required>
+      </label>
+      <label class="field"><span class="field-label">Time Finish <span class="req-star">*</span></span>
+        <input class="text-input" type="time" name="timeFinish" id="f_timeFinish" required>
+      </label>
+      <div class="downtime-preview downtime-preview-inline">
+        <span>Break Down Time</span>
+        <strong id="downtimePreview">--:--</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="entry-section">
+    <h4 class="entry-section-title"><span class="ci">&#128221;</span> Notes</h4>
+    <div class="grid2">
+      <label class="field">Reason / RCA
+        <input class="text-input" type="text" name="reason" id="f_reason" placeholder="Root cause">
+      </label>
+      <label class="field">Remarks
+        <input class="text-input" type="text" name="remarks" id="f_remarks" placeholder="Optional notes">
+      </label>
+    </div>
+    <label class="field">Action Taken
+      <textarea class="text-input" rows="2" name="actionTaken" id="f_actionTaken" placeholder="What was done to fix the machine"></textarea>
+    </label>
+  </div>
+
+  <div class="entry-actions">
+    <a class="btn ghost" href="/logs">View Logs</a>
+    <button type="submit" class="btn primary" id="entrySubmitBtn">&#10133; Save Entry</button>
+  </div>
+</form>
+
+<div class="session-panel" id="sessionPanel">
+  <h3>&#9203; Entries Added This Session</h3>
+  <div class="session-count" id="sessionCount">No entries yet.</div>
+  <div id="sessionList"></div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>document.addEventListener('DOMContentLoaded', initAddDataPage);</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% set page_title = "User Management" %}
+{% set page_sub = "Manage system users and their roles" %}
+
+{% block content %}
+<div class="card" style="margin-bottom:18px;">
+  <h3>Add New User</h3>
+  <div class="form-error" id="userFormError"></div>
+  <form id="userForm" class="grid2" style="align-items:end;">
+    <label class="field">Username
+      <input class="text-input" type="text" id="u_username" required>
+    </label>
+    <label class="field">Password
+      <input class="text-input" type="password" id="u_password" required minlength="4">
+    </label>
+    <label class="field">Role
+      <span class="select-wrap">
+        <select id="u_role">
+          <option value="operator">Operator</option>
+          <option value="admin">Admin</option>
+        </select>
+        <span class="select-caret">&#9662;</span>
+      </span>
+    </label>
+    <div class="field" style="margin-bottom:0;">
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); margin-bottom:8px;">
+        <input type="checkbox" id="u_can_add"> Data entry permission (Add Data)
+      </label>
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2);">
+        <input type="checkbox" id="u_can_edit"> Edit/Delete permission (Logs)
+      </label>
+    </div>
+    <div>
+      <button type="submit" class="btn primary">&#10133; Add User</button>
+    </div>
+  </form>
+</div>
+
+<div class="table-panel">
+  <div class="table-toolbar">
+    <div class="log-count" id="userCount"></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Username</th><th>Role</th><th>Data Entry</th><th>Edit/Delete</th><th>Created</th><th></th></tr>
+      </thead>
+      <tbody id="usersTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="editUserModalBackdrop">
+  <form class="confirm-panel" id="editUserForm" style="max-width:420px; text-align:left;">
+    <div class="entry-head" style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="margin:0; font-size:16px;">&#9998; Edit User</h2>
+      <button type="button" class="icon-btn" id="closeEditUserBtn">&#10005;</button>
+    </div>
+    <div class="form-error" id="editUserFormError"></div>
+    <input type="hidden" id="eu_id">
+
+    <label class="field">Username
+      <input class="text-input" type="text" id="eu_username" required>
+    </label>
+    <label class="field">New Password <span style="color:var(--text-dim); font-weight:400;">(leave blank to keep unchanged)</span>
+      <input class="text-input" type="password" id="eu_password" minlength="4" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+    </label>
+    <label class="field">Role
+      <span class="select-wrap">
+        <select id="eu_role">
+          <option value="operator">Operator</option>
+          <option value="admin">Admin</option>
+        </select>
+        <span class="select-caret">&#9662;</span>
+      </span>
+    </label>
+    <div class="field">
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); margin-bottom:8px;">
+        <input type="checkbox" id="eu_can_add"> Data entry permission (Add Data)
+      </label>
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2);">
+        <input type="checkbox" id="eu_can_edit"> Edit/Delete permission (Logs)
+      </label>
+    </div>
+
+    <div class="confirm-actions" style="margin-top:18px;">
+      <button type="button" class="btn ghost" id="cancelEditUserBtn">Cancel</button>
+      <button type="submit" class="btn primary">Save</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>document.addEventListener('DOMContentLoaded', initUsersPage);</script>
+{% endblock %}

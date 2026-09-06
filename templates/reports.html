@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% set page_title = "Reports" %}
+{% set page_sub = "Choose filters and export an Excel report" %}
+
+{% block content %}
+<div class="settings-tabs">
+  <button class="settings-tab active" data-report-tab="breakdown">&#128202; Breakdown Report</button>
+  <button class="settings-tab" data-report-tab="performance">&#128200; Performance Report</button>
+</div>
+
+<!-- ---------------- Breakdown report (unit-wise, as before) ---------------- -->
+<div class="report-tab-panel" data-report-panel="breakdown">
+  <div class="card" style="max-width:720px;">
+    <h3>Filters</h3>
+    <div class="grid2">
+      <label class="field">Unit
+        <div id="reportUnit"></div>
+      </label>
+      <label class="field">Machine
+        <div id="reportMachine"></div>
+      </label>
+
+      <label class="field">From
+        <input class="text-input" type="date" id="reportStart">
+      </label>
+      <label class="field">To
+        <input class="text-input" type="date" id="reportEnd">
+      </label>
+
+      <label class="field">Shift
+        <div id="reportShift"></div>
+      </label>
+      <label class="field">Technician
+        <div id="reportTechnician"></div>
+      </label>
+
+      <label class="field">Fault Category
+        <div id="reportFault"></div>
+      </label>
+      <label class="field">Complaint Reference
+        <div id="reportComplaint"></div>
+      </label>
+      <label class="field">Notification Type
+        <div id="reportNotification"></div>
+      </label>
+    </div>
+
+    <div id="reportMatchCount" class="report-match-count"></div>
+
+    <div class="entry-actions" style="justify-content:flex-start;">
+      <a class="btn primary" id="exportXlsxBtn" href="#">&#11015; Download Excel Report</a>
+      <button class="btn ghost" id="savePresetBtn">&#128190; Save Filter Preset</button>
+    </div>
+  </div>
+
+  <div class="card" id="presetsCard" style="max-width:720px; margin-top:16px; display:none;">
+    <h3>&#128278; Saved Filter Presets</h3>
+    <p style="color:var(--ink-3); font-size:12.5px; margin-top:-8px;">Load a previously saved filter combination with one click.</p>
+    <div class="chip-list" id="presetsList"></div>
+  </div>
+</div>
+
+<!-- ---------------- Performance report (per technician) ---------------- -->
+<div class="report-tab-panel" data-report-panel="performance" style="display:none;">
+  <div class="card" style="max-width:720px;">
+    <h3>Filters</h3>
+    <p style="color:var(--ink-3); font-size:12.5px; margin-top:-8px;">Leave Technician empty to include every technician.</p>
+    <div class="grid2">
+      <label class="field">Unit
+        <div id="perfReportUnit"></div>
+      </label>
+      <label class="field">Technician
+        <div id="perfReportTechnician"></div>
+      </label>
+
+      <label class="field">From
+        <input class="text-input" type="date" id="perfReportStart">
+      </label>
+      <label class="field">To
+        <input class="text-input" type="date" id="perfReportEnd">
+      </label>
+    </div>
+
+    <div id="perfReportMatchCount" class="report-match-count"></div>
+
+    <div class="entry-actions" style="justify-content:flex-start;">
+      <a class="btn primary" id="exportPerfXlsxBtn" href="#">&#11015; Download Performance Report</a>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:720px; margin-top:16px;">
+    <h3>&#128203; What's in this report</h3>
+    <ul style="margin:0; padding-left:18px; color:var(--ink-2); font-size:13px; line-height:1.9;">
+      <li><strong>Summary</strong> — KPIs and a per-technician efficiency table</li>
+      <li><strong>Monthly</strong> — month-by-month efficiency, per technician</li>
+      <li><strong>Daily Detail</strong> — every active day, per technician, with the working hours used that day</li>
+      <li><strong>Records</strong> — the full raw breakdown records for the selected technicians</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>document.addEventListener('DOMContentLoaded', () => { initReportsPage(); initPerfReportTab(); initReportTabs(); });</script>
+{% endblock %}

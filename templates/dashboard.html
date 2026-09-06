@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% set page_title = "Dashboard" %}
+{% set page_sub = "Breakdown overview and trends" %}
+{% block content %}
+
+<div class="dash-toolbar">
+  <div class="dash-toolbar-row">
+    <div class="dash-filter-group">
+      <label class="field" style="margin-bottom:0;">Year
+      <span class="select-wrap small">
+        <select id="dashYearFilter"></select>
+        <span class="select-caret">&#9662;</span>
+      </span>
+      </label>
+      <label class="field" style="margin-bottom:0;">Month
+      <span class="select-wrap small">
+        <select id="dashMonthFilter">
+          <option value="">All Months</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+        <span class="select-caret">&#9662;</span>
+      </span>
+      </label>
+      <label class="field" style="margin-bottom:0;">Unit
+        <div id="dashUnitFilter"></div>
+      </label>
+      <label class="field" style="margin-bottom:0;">Machine
+        <div id="dashMachineFilter"></div>
+      </label>
+      <label class="field" style="margin-bottom:0;">Machine #
+        <div id="dashMachineNoFilter"></div>
+      </label>
+      <label class="field" style="margin-bottom:0;">Shift
+        <div id="dashShiftFilter"></div>
+      </label>
+      <label class="field" style="margin-bottom:0;">Technician
+        <div id="dashTechnicianFilter"></div>
+      </label>
+      <label class="field" style="margin-bottom:0;">Fault
+        <div id="dashFaultFilter"></div>
+      </label>
+      <label class="field" style="margin-bottom:0;">Complaint Ref
+        <div id="dashComplaintFilter"></div>
+      </label>
+      <label class="field" style="margin-bottom:0;">Notification
+        <div id="dashNotificationFilter"></div>
+      </label>
+    </div>
+    <div class="dash-action-group">
+      <button class="btn ghost" id="dashClearFiltersBtn" style="margin-top:0;">Clear</button>
+      <button class="btn ghost" id="dashAllTimeBtn" style="margin-top:0;">Full Record (All Time)</button>
+      <a class="btn ghost" id="dashReportLink" href="/reports" style="margin-top:0;">&#128196; Full Report</a>
+    </div>
+  </div>
+  <div class="dash-toolbar-row" style="margin-top:10px;">
+    <span class="preset-label">Quick Range:</span>
+    <button class="preset-btn" data-preset="today">Today</button>
+    <button class="preset-btn" data-preset="yesterday">Yesterday</button>
+    <button class="preset-btn" data-preset="thisweek">This Week</button>
+    <button class="preset-btn" data-preset="7">Last 7 Days</button>
+    <button class="preset-btn" data-preset="30">Last 30 Days</button>
+  </div>
+  <div class="dash-toolbar-meta">
+    <div class="dash-filter-summary" id="dashFilterSummary"></div>
+    <div class="dash-updated">
+      <span id="dashUpdatedAt"></span>
+      <label class="auto-refresh-toggle" title="Auto-refresh every 60 seconds">
+        <input type="checkbox" id="dashAutoRefreshToggle">
+        <span>Auto-refresh</span>
+      </label>
+      <button class="refresh-btn" id="dashPrintBtn" title="Print Dashboard">&#128424;</button>
+      <button class="refresh-btn" id="dashRefreshBtn" title="Refresh">&#8635;</button>
+    </div>
+  </div>
+</div>
+
+<div id="dashboardRoot">
+  <div class="kpi-row" id="kpiRow"></div>
+  <div class="stat-strip" id="statStrip"></div>
+
+  <div class="insights-panel" id="insightsPanel" style="display:none;">
+    <h3>&#128161; Key Insights</h3>
+    <ul id="insightsList"></ul>
+  </div>
+
+  <div class="chart-grid" id="chartGrid">
+    <div class="chart-row-3">
+      <div class="chart-card">
+        <h3><span class="ci">&#128200;</span> Downtime Trend (per day)</h3>
+        <div class="chart-canvas-wrap"><canvas id="trendChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3><span class="ci">&#128337;</span> Shift Distribution</h3>
+        <div class="chart-canvas-wrap"><canvas id="shiftChart"></canvas></div>
+      </div>
+      <div class="chart-card" id="hourChartCard" style="display:none;">
+        <h3><span class="ci">&#128336;</span> Downtime by Hour of Day</h3>
+        <div class="chart-canvas-wrap"><canvas id="hourChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-row-3">
+      <div class="chart-card">
+        <h3><span class="ci">&#128119;</span> Technician Workload</h3>
+        <div class="chart-canvas-wrap"><canvas id="techChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3><span class="ci">&#128295;</span> Machine-wise Downtime (min) &mdash; All Machines</h3>
+        <div class="chart-canvas-wrap"><canvas id="machineChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3><span class="ci">&#9888;</span> Fault Categories &mdash; All Faults</h3>
+        <div class="chart-canvas-wrap"><canvas id="faultChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" id="emptyState" style="display:none">
+    <p>No breakdown record found for this filter.</p>
+    <p class="empty-sub">Change the filter or add a record from the "Add Data" page.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>document.addEventListener('DOMContentLoaded', initDashboardPage);</script>
+{% endblock %}

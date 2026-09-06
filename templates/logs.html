@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% set page_title = "Logs" %}
+{% set page_sub = "All breakdown records, with search and filters" %}
+{% block content %}
+<div class="kpi-row" id="logsKpiRow"></div>
+
+<div class="card" style="margin-bottom:16px;">
+  <h3>Filters</h3>
+  <div class="filter-bar" style="margin-bottom:0;">
+    <div class="search-box" style="max-width:260px;">
+      <span>&#128269;</span>
+      <input id="searchInput" placeholder="Search machine, fault, technician&hellip;">
+    </div>
+    <label class="field" style="margin-bottom:0;">From
+      <input class="text-input" type="date" id="logStart">
+    </label>
+    <label class="field" style="margin-bottom:0;">To
+      <input class="text-input" type="date" id="logEnd">
+    </label>
+    <label class="field" style="margin-bottom:0;">Unit
+      <div id="unitFilter"></div>
+    </label>
+    <label class="field" style="margin-bottom:0;">Machine
+      <div id="machineFilter"></div>
+    </label>
+    <label class="field" style="margin-bottom:0;">Shift
+      <div id="shiftFilter"></div>
+    </label>
+    <label class="field" style="margin-bottom:0;">Technician
+      <div id="technicianFilter"></div>
+    </label>
+    <label class="field" style="margin-bottom:0;">Fault
+      <div id="faultFilter"></div>
+    </label>
+    <label class="field" style="margin-bottom:0;">Complaint Ref
+      <div id="complaintFilter"></div>
+    </label>
+    <label class="field" style="margin-bottom:0;">Notification Type
+      <div id="notificationFilter"></div>
+    </label>
+    <button class="btn ghost" id="clearFiltersBtn" style="margin-top:0;">Clear</button>
+    <a class="btn ghost" id="logsExportBtn" href="#" style="margin-top:0;">&#11015; Excel Export</a>
+  </div>
+</div>
+
+<div class="table-panel">
+  <div class="table-toolbar">
+    <div class="log-count" id="logCount"></div>
+  </div>
+  <div class="table-wrap no-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable" data-sort="date">Date <span class="sort-arrow"></span></th>
+          <th class="sortable" data-sort="unit">Unit <span class="sort-arrow"></span></th>
+          <th class="sortable" data-sort="machine">Machine <span class="sort-arrow"></span></th>
+          <th class="sortable" data-sort="faultCategory">Fault Category <span class="sort-arrow"></span></th>
+          <th class="sortable" data-sort="shift">Shift <span class="sort-arrow"></span></th>
+          <th class="sortable" data-sort="technician">Technician <span class="sort-arrow"></span></th>
+          <th class="sortable" data-sort="downtime">Downtime <span class="sort-arrow"></span></th>
+          <th style="width:70px;"></th>
+        </tr>
+      </thead>
+      <tbody id="logTableBody"></tbody>
+    </table>
+  </div>
+  <div class="pagination-bar" id="paginationBar"></div>
+</div>
+
+<div class="modal-backdrop" id="detailModalBackdrop">
+  <div class="detail-panel">
+    <div class="entry-head">
+      <h2>&#128203; Breakdown Record Detail</h2>
+      <button type="button" class="icon-btn" id="closeDetailBtn">&#10005;</button>
+    </div>
+    <div class="detail-grid" id="detailGrid"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="editModalBackdrop">
+  <form class="entry-panel" id="editForm">
+    <div class="entry-head">
+      <h2>&#9998; Edit Record</h2>
+      <button type="button" class="icon-btn" id="closeEditBtn">&#10005;</button>
+    </div>
+    <div class="form-error" id="editFormError"></div>
+    <input type="hidden" id="e_id">
+
+    <div class="grid2">
+      <label class="field"><span class="field-label">Unit <span class="req-star">*</span></span>
+        <span class="select-wrap">
+          <select id="e_unit" required></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field"><span class="field-label">Date <span class="req-star">*</span></span>
+        <input class="text-input" type="date" id="e_date" required>
+      </label>
+
+      <label class="field"><span class="field-label">Shift <span class="req-star">*</span></span>
+        <span class="select-wrap">
+          <select id="e_shift" required></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field">Complaint Reference
+        <span class="select-wrap">
+          <select id="e_complaintReference"><option value="">Select (optional)</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+
+      <label class="field">Notification Type
+        <span class="select-wrap">
+          <select id="e_notificationType"></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field">Ticket No.
+        <input class="text-input" type="text" id="e_ticketNo">
+      </label>
+      <label class="field">Order No.
+        <input class="text-input" type="text" id="e_orderNo">
+      </label>
+      <label class="field"><span class="field-label">Machine <span class="req-star">*</span></span>
+        <span class="select-wrap">
+          <select id="e_machine" required></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+
+      <label class="field">Machine No.
+        <input class="text-input" type="text" id="e_machineNo">
+      </label>
+      <label class="field">Device Detail
+        <span class="select-wrap">
+          <select id="e_deviceDetail"><option value="">Select (optional)</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+
+      <label class="field">Device Sub-Category
+        <span class="select-wrap">
+          <select id="e_deviceSubCat"><option value="">Select (optional)</option></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+      <label class="field"><span class="field-label">Fault Category <span class="req-star">*</span></span>
+        <span class="select-wrap">
+          <select id="e_faultCategory" required></select>
+          <span class="select-caret">&#9662;</span>
+        </span>
+      </label>
+
+      <label class="field"><span class="field-label">Technician <span class="req-star">*</span></span>
+        <div id="e_technician"></div>
+      </label>
+
+      <label class="field"><span class="field-label">Time Start <span class="req-star">*</span></span>
+        <input class="text-input" type="time" id="e_timeStart" required>
+      </label>
+      <label class="field"><span class="field-label">Time Finish <span class="req-star">*</span></span>
+        <input class="text-input" type="time" id="e_timeFinish" required>
+      </label>
+    </div>
+
+    <div class="downtime-preview">
+      <span>Break Down Time:</span>
+      <strong id="editDowntimePreview">--:--</strong>
+    </div>
+
+    <label class="field">Reason / RCA
+      <input class="text-input" type="text" id="e_reason">
+    </label>
+    <label class="field">Action Taken
+      <textarea class="text-input" rows="2" id="e_actionTaken"></textarea>
+    </label>
+    <label class="field">Remarks
+      <input class="text-input" type="text" id="e_remarks">
+    </label>
+
+    <div class="entry-actions">
+      <button type="button" class="btn ghost" id="cancelEditBtn">Cancel</button>
+      <button type="submit" class="btn primary">Save Changes</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>document.addEventListener('DOMContentLoaded', initLogPage);</script>
+{% endblock %}

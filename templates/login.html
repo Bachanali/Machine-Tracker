@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in &middot; Machine Breakdown Tracker</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="login-shell">
+
+  <div class="login-hero">
+    <div class="login-hero-top">
+      <div class="login-hero-brand">
+        <div class="brand-mark">&#9881;</div>
+        <div>
+          <div class="login-hero-brand-name">Breakdown Tracker</div>
+          <div class="login-hero-brand-tag">MAINTENANCE PLATFORM</div>
+        </div>
+      </div>
+      <div class="login-hero-clock">
+        <div class="time" id="heroTime">--:--:--</div>
+        <div class="date" id="heroDate">&mdash;</div>
+      </div>
+    </div>
+
+    <div class="login-hero-mid">
+      <h1 class="login-hero-headline">Machine downtime,<br>tracked in <span class="accent">real time.</span></h1>
+      <p class="login-hero-sub">
+        Log breakdowns, monitor technician performance, and generate reports
+        &mdash; all from one control room view, across every unit.
+      </p>
+
+      <ul class="login-hero-features">
+        <li><span class="fi">&#9889;</span> Live breakdown logging across every unit &amp; machine</li>
+        <li><span class="fi">&#128202;</span> Dashboard, technician performance &amp; efficiency analytics</li>
+        <li><span class="fi">&#128196;</span> One-click Excel reporting, filtered any way you need</li>
+        <li><span class="fi">&#128274;</span> Secure, role-based access control</li>
+      </ul>
+
+      <div class="login-hero-stats">
+        <div class="login-hero-stat"><span class="si">&#127970;</span><div><div class="sv">Multi-Unit</div><div class="sl">Coverage</div></div></div>
+        <div class="login-hero-stat"><span class="si">&#128737;</span><div><div class="sv">Role-Based</div><div class="sl">Access</div></div></div>
+        <div class="login-hero-stat"><span class="si">&#128268;</span><div><div class="sv">Offline-Ready</div><div class="sl">On your LAN</div></div></div>
+      </div>
+    </div>
+
+    <div class="login-hero-footer">
+      <span><span class="status-dot"></span>SYSTEM READY</span>
+      <span>Runs fully offline on your local network</span>
+    </div>
+  </div>
+
+  <div class="login-panel">
+    <div class="login-card">
+      <div class="login-card-bar"></div>
+      <h1>Sign in</h1>
+      <p class="login-sub">Enter your credentials to access the dashboard.</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, msg in messages %}
+            <div class="flash {{ 'error' if category == 'error' else 'success' }}" style="margin-bottom:16px;">{{ msg }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="/login">
+        <span class="login-field-label">Username</span>
+        <div class="login-input-wrap">
+          <span class="li-icon">&#128100;</span>
+          <input class="text-input" type="text" name="username" placeholder="Enter your username" required autofocus autocomplete="username">
+        </div>
+
+        <span class="login-field-label">Password</span>
+        <div class="login-input-wrap">
+          <span class="li-icon">&#128274;</span>
+          <input class="text-input" type="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn primary" id="loginSubmitBtn">Sign In &rarr;</button>
+      </form>
+
+      <div class="login-card-footer">Breakdown Tracker &middot; Authorized personnel only</div>
+    </div>
+  </div>
+
+</div>
+<script>
+document.querySelector("form").addEventListener("submit", function () {
+  var btn = document.getElementById("loginSubmitBtn");
+  btn.innerHTML = '<span class="btn-spinner"></span> Signing in&hellip;';
+  btn.disabled = true;
+});
+
+function tickHeroClock() {
+  var timeEl = document.getElementById("heroTime");
+  var dateEl = document.getElementById("heroDate");
+  if (!timeEl) return;
+  var now = new Date();
+  timeEl.textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  dateEl.textContent = now.toLocaleDateString([], { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+}
+tickHeroClock();
+setInterval(tickHeroClock, 1000);
+</script>
+</body>
+</html>
